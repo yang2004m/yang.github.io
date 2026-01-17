@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://eric6.dpdns.org</id>
+    <title>杨的肯定</title>
+    <updated>2026-01-17T14:31:57.167Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://eric6.dpdns.org"/>
+    <link rel="self" href="https://eric6.dpdns.org/atom.xml"/>
+    <logo>https://eric6.dpdns.org/images/avatar.png</logo>
+    <icon>https://eric6.dpdns.org/favicon.ico</icon>
+    <rights>All rights reserved 2026, 杨的肯定</rights>
+    <entry>
+        <title type="html"><![CDATA[强哥帅不帅]]></title>
+        <id>https://eric6.dpdns.org/post/qiang-ge-shuai-bu-shuai/</id>
+        <link href="https://eric6.dpdns.org/post/qiang-ge-shuai-bu-shuai/">
+        </link>
+        <updated>2026-01-17T14:26:06.000Z</updated>
+        <summary type="html"><![CDATA[<p>包帅🤡🤡🤡</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>包帅🤡🤡🤡</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[测试Gridea的网页编辑能力]]></title>
+        <id>https://eric6.dpdns.org/post/ce-shi-gridea-de-wang-ye-bian-ji-neng-li/</id>
+        <link href="https://eric6.dpdns.org/post/ce-shi-gridea-de-wang-ye-bian-ji-neng-li/">
+        </link>
+        <updated>2026-01-17T13:46:32.000Z</updated>
+        <summary type="html"><![CDATA[<p>🤠🤠🤠🤠</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>🤠🤠🤠🤠</p>
+]]></content>
+    </entry>
+</feed>

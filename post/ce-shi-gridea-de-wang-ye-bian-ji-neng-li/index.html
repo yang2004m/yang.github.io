@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>测试Gridea的网页编辑能力 | 杨的肯定</title>
+<link rel="shortcut icon" href="https://eric6.dpdns.org/favicon.ico?v=1768660303481">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://eric6.dpdns.org/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="测试Gridea的网页编辑能力 | 杨的肯定 - Atom Feed" href="https://eric6.dpdns.org/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="🤠🤠🤠🤠
+
+#include &quot;denoise.h&quot;
+#include 
+#include &lt;hls_video_mem.h&gt;      // 2025.2 中用于 LineBuffer(行缓存) 和..." />
+    <meta name="keywords" content="Test" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://eric6.dpdns.org">
+  <img class="avatar" src="https://eric6.dpdns.org/images/avatar.png?v=1768660303481" alt="">
+  </a>
+  <h1 class="site-title">
+    杨的肯定
+  </h1>
+  <p class="site-description">
+    
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              测试Gridea的网页编辑能力
+            </h2>
+            <div class="post-info">
+              <span>
+                2026-01-17
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://eric6.dpdns.org/tag/AwMLcGTTD-/" class="post-tag">
+                  # Test
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://eric6.dpdns.org/post-images/ce-shi-gridea-de-wang-ye-bian-ji-neng-li.jpg" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>🤠🤠🤠🤠</p>
+<!-- more -->
+<p>#include &quot;denoise.h&quot;<br>
+#include <cstdint><br>
+#include &lt;hls_video_mem.h&gt;      // 2025.2 中用于 LineBuffer(行缓存) 和 Window(平滑窗口) 的库</p>
+<p>void hls_denoise_3_3(<br>
+pixel_stream&amp; input,<br>
+pixel_stream&amp; output,<br>
+int width,<br>
+int height<br>
+){<br>
+// 静态定义行缓存（存储 3 行）和 3x3 滑动窗口<br>
+// static hls::LineBuffer&lt;int ROWS, int COLS, typename T&gt;<br>
+// static hls::Window&lt;int ROWS, int COLS, typename T&gt;<br>
+static hls::LineBuffer&lt;3, MAX_WIDTH, unsigned char&gt; line_buf;<br>
+static hls::Window&lt;3, 3, unsigned char&gt; win;</p>
+<pre><code>// 嵌套循环处理图像
+for(int r = 0; r &lt; height; r++){
+    for(int c = 0; c &lt; width; c++){
+        #pragma HLS PIPELINE II=1
+        // 1. 从输入流读取当前像素
+        unsigned char pixel_in = input.read();
+        
+        // 2. 更新行缓存：将列 c 的数据向上移动，腾出最底层放新像素
+        // line_buf.shift_pixels_up(int col)
+        // line_buf.insert_bottom_row(unsigned char value, int col)
+        line_buf.shift_pixels_up(c);
+        line_buf.insert_bottom_row(pixel_in, c);
+
+        // 3. 更新滑动窗口：窗口向左移动，并从行缓存中取出一列新数据填入窗口最右侧
+        // win.insert_pixel(unsigned char value, int row, int col)
+        win.shift_pixels_left();
+        win.insert_pixel(line_buf.getval(0, c), 0, 2);
+        win.insert_pixel(line_buf.getval(1, c), 1, 2);
+        win.insert_pixel(line_buf.getval(2, c), 2, 2);
+
+        // 4. 计算 3x3 均值（降噪核心）
+        // 当行和列都达到 2 以上时，窗口才填满了有效的 3x3 像素
+        if (r &gt;= 2 &amp;&amp; c &gt;= 2){
+            int sum = 0;
+            for(int i = 0; i &lt; 3; i++){
+                for(int j = 0; j &lt; 3; j++){
+                    #pragma HLS PIPELINE II=1       // 可以测试一下看一看这块有没有影响
+                    sum += win.getval(i, j);
+                }
+            }
+            output.write((unsigned char)(sum / 9));
+        }else{
+            output.write(0);            // 窗口未填满时的边界处理：输出 0
+        }
+    }
+}
+</code></pre>
+<p>}</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://eric6.dpdns.org/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
